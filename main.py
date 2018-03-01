@@ -5,12 +5,14 @@ from collections import namedtuple
 Params = namedtuple('Params', field_names=['r', 'c', 'f', 'n', 'b', 't'])
 Ride = namedtuple('Ride', field_names=['a', 'b', 'x', 'y', 's', 'f'])
 
+Cars = []
 
 class Car(object):
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.is_available = True
+        self.is_available = 0
+        self.assigned_rides = []
 
 
 def get_argparser():
@@ -31,7 +33,7 @@ def get_wait_time(start, step):
 
 
 def get_bonus(distance_to_passenger, passenger_wait_time, step, bonus):
-    can_get_bonus = distance_to_passenger + step <= passenger_wait_time;
+    can_get_bonus = distance_to_passenger + step <= passenger_wait_time
     if can_get_bonus:
         return bonus
     return 0
@@ -58,8 +60,22 @@ def simulate(params, rides):
         step(params, rides)
 
 
+def free_cars(cars):
+    for car in [i for i in cars if i.is_available > 0]:
+        car.is_available -= 1
+
+
+def assign_rides(metrics, freed_cars):
+    for i, car in enumerate(freed_cars):
+        car.assign_rides.push(metrics)
+        car.is_available = metrics[i]
+
+
 def step(params, rides):
+    free_cars(Cars)
+    freed_cars = [i for i in Cars if i.is_available == 0]
     metrics = sorted([calc_metric(params, r) for r in rides])
+    assign_rides(metrics, freed_cars)
 
 
 def main():
