@@ -78,7 +78,7 @@ def free_cars(cars):
 def assign_rides(metrics, freed_cars):
     for i, car in enumerate(freed_cars):
         ride_result = metrics[i]
-        car.assign_rides.push(ride_result.index)
+        car.assign_rides.append(ride_result.index)
         car.is_available = ride_result.overall_distance
 
 
