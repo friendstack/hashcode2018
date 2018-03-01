@@ -5,7 +5,7 @@ from collections import namedtuple
 Params = namedtuple('Params', field_names=['r', 'c', 'f', 'n', 'b', 't'])
 Ride = namedtuple('Ride', field_names=['a', 'b', 'x', 'y', 's', 'f'])
 
-Cars = []
+CARS = []
 
 
 class Car(object):
@@ -50,7 +50,7 @@ def get_bonus(distance_to_passenger, passenger_wait_time, step, bonus):
 def calc_metric(params, ride, vehicle, t, bonus_amount):
     passenger = [ride.a, ride.b]
     end_point = [ride.x, ride.y]
-    distance_to_passenger = calculate_distance(vehicle, passenger)
+    distance_to_passenger = calculate_distance([vehicle.x, vehicle.y], passenger)
     distance_to_end = calculate_distance(passenger, end_point)
     wait_time = get_wait_time(t, ride.s)
     bonus = get_bonus(distance_to_passenger, ride.s, t, bonus_amount)
@@ -64,10 +64,12 @@ def make_state(params):
 
 
 def simulate(params, rides):
+    global CARS
     state = make_state(params)
+    CARS = state
 
-    for s in range(int(params.t)):
-        step(params, rides)
+    for i, s in enumerate(range(int(params.t))):
+        step(params, rides, i)
 
 
 def free_cars(cars):
@@ -82,11 +84,14 @@ def assign_rides(metrics, freed_cars):
         car.is_available = ride_result.overall_distance
 
 
-def step(params, rides):
-    free_cars(Cars)
-    freed_cars = [i for i in Cars if i.is_available == 0]
-    metrics = sorted([calc_metric(params, r) for r in rides])
-    assign_rides(metrics, freed_cars)
+def step(params, rides, s):
+    free_cars(CARS)
+    freed_cars = [i for i in CARS if i.is_available == 0]
+    for c in freed_cars:
+        best_result = sorted([calc_metric(params, r, c, s, params.b) for r in rides], key=lambda x: x.metric)[0]
+        print(best_result.__dict__)
+    # metrics = sorted([calc_metric(params, r) for r in rides])
+    # assign_rides(metrics, freed_cars)
 
 
 def main():
@@ -94,16 +99,15 @@ def main():
 
     params, rides = parse_rides(args)
 
-    print(rides)
-    print(params)
+    res = simulate(params, rides)
 
 
 def parse_rides(args):
     with open(args.f, 'r') as f:
-        params = Params(*f.readline().strip().split(' '))
+        params = Params(*list(map(int, f.readline().strip().split(' '))))
         rides = []
         for line in f:
-            rides.append(Ride(*line.strip().split()))
+            rides.append(Ride(*list(map(int, line.strip().split()))))
         return params, rides
 
 
