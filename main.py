@@ -102,7 +102,7 @@ def main():
     simulate(params, rides)
     with open('result', 'w') as f:
         for i, c in enumerate(CARS):
-            l = str(i) + ' '
+            l = str(len(c.assigned_rides)) + ' '
             l += ' '.join(map(str, c.assigned_rides))
             f.write(l)
             f.write('\n')
