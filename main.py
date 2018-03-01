@@ -37,6 +37,25 @@ def calc_metric(params, ride, vehicle, t, bonus_amount):
     return distance_to_passenger + distance_to_end + wait_time - bonus
 
 
+def calc_metric(params, ride):
+    return 1
+
+
+def make_state(params):
+    return [[0, 0] for _ in range(int(params.f))]
+
+
+def simulate(params, rides):
+    state = make_state(params)
+
+    for s in range(int(params.t)):
+        step(params, rides)
+
+
+def step(params, rides):
+    metrics = sorted([calc_metric(params, r) for r in rides])
+
+
 def main():
     args = get_argparser().parse_args()
 
