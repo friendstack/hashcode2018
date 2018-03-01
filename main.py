@@ -1,4 +1,5 @@
 import argparse
+import math
 from collections import namedtuple
 
 
@@ -11,6 +12,10 @@ def get_argparser():
     parser.add_argument('-f', type=str)
 
     return parser
+
+
+def calculate_distance(a, b):
+    return math.abs(a[0] - b[0]) + math.abs(a[1] - b[1])
 
 
 def main():
