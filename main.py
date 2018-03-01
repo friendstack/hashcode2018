@@ -17,7 +17,8 @@ class Car(object):
 
 
 class RideResult(object):
-    def __init__(self, index, overall_distance, metric):
+    def __init__(self, index, overall_distance, metric, ride):
+        self.ride = ride
         self.index = index
         self.overall_distance = overall_distance
         self.metric = metric
@@ -77,11 +78,10 @@ def free_cars(cars):
         car.is_available -= 1
 
 
-def assign_rides(metrics, freed_cars):
-    for i, car in enumerate(freed_cars):
-        ride_result = metrics[i]
-        car.assign_rides.append(ride_result.index)
-        car.is_available = ride_result.overall_distance
+def assign_ride(rides, metric, car):
+    car.assigned_rides.push(metric.index)
+    car.is_available = metric.overall_distance
+    rides.remove(metric.ride)
 
 
 def step(params, rides, s):
@@ -90,8 +90,7 @@ def step(params, rides, s):
     for c in freed_cars:
         best_result = sorted([calc_metric(params, r, c, s, params.b) for r in rides], key=lambda x: x.metric)[0]
         print(best_result.__dict__)
-    # metrics = sorted([calc_metric(params, r) for r in rides])
-    # assign_rides(metrics, freed_cars)
+        assign_ride(rides, best_result, c)
 
 
 def main():
