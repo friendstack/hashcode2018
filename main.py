@@ -7,12 +7,20 @@ Ride = namedtuple('Ride', field_names=['a', 'b', 'x', 'y', 's', 'f'])
 
 Cars = []
 
+
 class Car(object):
     def __init__(self, x, y):
         self.x = x
         self.y = y
         self.is_available = 0
         self.assigned_rides = []
+
+
+class RideResult(object):
+    def __init__(self, index, overall_distance, metric):
+        self.index = index
+        self.overall_distance = overall_distance
+        self.metric = metric
 
 
 def get_argparser():
@@ -46,7 +54,9 @@ def calc_metric(params, ride, vehicle, t, bonus_amount):
     distance_to_end = calculate_distance(passenger, end_point)
     wait_time = get_wait_time(t, ride.s)
     bonus = get_bonus(distance_to_passenger, ride.s, t, bonus_amount)
-    return distance_to_passenger + distance_to_end + wait_time - bonus
+    time = distance_to_passenger + distance_to_end + wait_time
+    metric = time - bonus
+    return RideResult(ride.index, time, metric)
 
 
 def make_state(params):
