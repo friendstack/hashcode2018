@@ -24,7 +24,7 @@ def make_state(params):
 def simulate(params, rides):
     state = make_state(params)
 
-    for step in range(int(params.t)):
+    for s in range(int(params.t)):
         step(params, rides)
 
 
