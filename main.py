@@ -77,8 +77,9 @@ def free_cars(cars):
 
 def assign_rides(metrics, freed_cars):
     for i, car in enumerate(freed_cars):
-        car.assign_rides.push(metrics)
-        car.is_available = metrics[i]
+        ride_result = metrics[i]
+        car.assign_rides.push(ride_result.index)
+        car.is_available = ride_result.overall_distance
 
 
 def step(params, rides):
