@@ -3,7 +3,7 @@ from collections import namedtuple
 
 
 Params = namedtuple('Params', field_names=['r', 'c', 'f', 'n', 'b', 't'])
-Ride = namedtuple('Ride', field_names=['a', 'b', 'x', 'y', 's', 'f'])
+Ride = namedtuple('Ride', field_names=['a', 'b', 'x', 'y', 's', 'f', 'i'])
 
 CARS = []
 
@@ -57,7 +57,7 @@ def calc_metric(params, ride, vehicle, t, bonus_amount):
     bonus = get_bonus(distance_to_passenger, ride.s, t, bonus_amount)
     time = distance_to_passenger + distance_to_end + wait_time
     metric = time - bonus
-    return RideResult(ride.index, time, metric)
+    return RideResult(ride.i, time, metric, ride)
 
 
 def make_state(params):
@@ -79,7 +79,7 @@ def free_cars(cars):
 
 
 def assign_ride(rides, metric, car):
-    car.assigned_rides.push(metric.index)
+    car.assigned_rides.append(metric.index)
     car.is_available = metric.overall_distance
     rides.remove(metric.ride)
 
@@ -88,9 +88,10 @@ def step(params, rides, s):
     free_cars(CARS)
     freed_cars = [i for i in CARS if i.is_available == 0]
     for c in freed_cars:
-        best_result = sorted([calc_metric(params, r, c, s, params.b) for r in rides], key=lambda x: x.metric)[0]
-        print(best_result.__dict__)
-        assign_ride(rides, best_result, c)
+        if rides:
+            best_result = sorted([calc_metric(params, r, c, s, params.b) for r in rides], key=lambda x: x.metric)[0]
+            print(best_result.__dict__)
+            assign_ride(rides, best_result, c)
 
 
 def main():
@@ -98,15 +99,22 @@ def main():
 
     params, rides = parse_rides(args)
 
-    res = simulate(params, rides)
+    simulate(params, rides)
+    with open('result', 'w') as f:
+        for i, c in enumerate(CARS):
+            l = str(i) + ' '
+            l += ' '.join(map(str, c.assigned_rides))
+            f.write(l)
+            f.write('\n')
 
 
 def parse_rides(args):
     with open(args.f, 'r') as f:
         params = Params(*list(map(int, f.readline().strip().split(' '))))
         rides = []
-        for line in f:
-            rides.append(Ride(*list(map(int, line.strip().split()))))
+        for i, line in enumerate(f):
+            p = list(map(int, line.strip().split()))
+            rides.append(Ride(*p, i))
         return params, rides
 
 
