@@ -91,7 +91,7 @@ def step(params, rides):
 def main():
     args = get_argparser().parse_args()
 
-    rides, params = parse_rides(args)
+    params, rides = parse_rides(args)
 
     print(rides)
     print(params)
