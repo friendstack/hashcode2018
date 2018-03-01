@@ -13,13 +13,30 @@ def get_argparser():
     return parser
 
 
+def calc_metric(params, ride):
+    return 1
+
+
+def make_state(params):
+    return [[0, 0] for _ in range(int(params.f))]
+
+
+def simulate(params, rides):
+    state = make_state(params)
+
+    for step in range(int(params.t)):
+        step(params, rides)
+
+
+def step(params, rides):
+    metrics = sorted([calc_metric(params, r) for r in rides])
+
+
 def main():
     args = get_argparser().parse_args()
 
-    rides, params = parse_rides(args)
-
-    print(rides)
-    print(params)
+    params, rides = parse_rides(args)
+    result = simulate(params, rides)
 
 
 def parse_rides(args):
