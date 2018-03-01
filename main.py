@@ -6,6 +6,13 @@ Params = namedtuple('Params', field_names=['r', 'c', 'f', 'n', 'b', 't'])
 Ride = namedtuple('Ride', field_names=['a', 'b', 'x', 'y', 's', 'f'])
 
 
+class Car(object):
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.is_available = True
+
+
 def get_argparser():
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', type=str)
@@ -16,16 +23,19 @@ def get_argparser():
 def calculate_distance(a, b):
     return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
+
 def get_wait_time(start, step):
     if start <= step:
         return 0
     return step - start
+
 
 def get_bonus(distance_to_passenger, passenger_wait_time, step, bonus):
     can_get_bonus = distance_to_passenger + step <= passenger_wait_time;
     if can_get_bonus:
         return bonus
     return 0
+
 
 def calc_metric(params, ride, vehicle, t, bonus_amount):
     passenger = [ride.a, ride.b]
@@ -37,12 +47,8 @@ def calc_metric(params, ride, vehicle, t, bonus_amount):
     return distance_to_passenger + distance_to_end + wait_time - bonus
 
 
-def calc_metric(params, ride):
-    return 1
-
-
 def make_state(params):
-    return [[0, 0] for _ in range(int(params.f))]
+    return [Car(0, 0) for _ in range(int(params.f))]
 
 
 def simulate(params, rides):
